@@ -2,17 +2,27 @@ require 'optparse'
 require_relative 'Backlog'
 require_relative 'TimeKeeper'
 
-# 課題をセットする
-def set(key)
-  tk = TimeKeeper.new
-  tk.set(key)
+class Main
+
+  def initialize
+    @tk = TimeKeeper.new
+  end
+
+  # 課題をセットする
+  def set(key)
+    @tk.is_empty? or raise '課題が作業中です'
+    backlog = Backlog.new(:issue_key => key)
+    backlog.issueIsExists? or raise '課題が見つかりません'
+    @tk.set(key)
+  end
+
+  # 課題をアンセットする
+  def unset
+  end
+
 end
 
-# 課題をアンセットする
-def unset
-
-end
-
+main = Main.new
 argv = ARGV.getopts('s:e')
-argv['s'] and set(argv['s'])
-argv['e'] and unset()
+argv['s'] and main.set(argv['s'])
+argv['e'] and main.unset()

@@ -18,6 +18,10 @@ class Main
 
   # 課題をアンセットする
   def unset
+    @tk.is_empty? and raise '課題が設定されていません'
+    result = @tk.unset
+    backlog = Backlog.new(:issue_key => result[:issue_key])
+    backlog.addWorkingTime(result[:diff_hours])
   end
 
 end

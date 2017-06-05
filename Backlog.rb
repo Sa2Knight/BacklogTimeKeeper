@@ -11,6 +11,16 @@ class Backlog
     @client = BacklogKit::Client.new(space_id: space_id, api_key: api_key)
   end
 
+  # 課題が存在するか
+  def issueIsExists?
+    begin
+      @client.get_issue(@issue_key)
+      return true
+    rescue
+      return false
+    end
+  end
+
   # 作業時間を取得する
   def getWorkingTime
     issue = @client.get_issue(@issue_key)
@@ -27,7 +37,7 @@ class Backlog
   def addWorkingTime(hours_to_add)
     current_hours = self.getWorkingTime
     new_hours = current_hours + hours_to_add
-    self.writeWorkingTime(new_hours)
+    self.setWorkingTime(new_hours)
   end
 
 end

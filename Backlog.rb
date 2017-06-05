@@ -16,4 +16,10 @@ class Backlog
     return issue.body.actualHours
   end
 
+  # 課題キーを指定し、作業時間を書き換える
+  def writeWorkingTime(key, new_hours)
+    params = {:actualHours => new_hours}
+    @client.update_issue(key, params)
+  end
+
 end

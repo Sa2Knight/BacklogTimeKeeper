@@ -3,23 +3,24 @@ require 'pp'
 
 class Backlog
 
-  # スペースIDとAPIKeyを指定してオブジェクトを生成
-  def initialize(space_id = nil, api_key = nil)
-    space_id or space_id = ENV['BACKLOG_SPACE']
-    api_key  or api_key  = ENV['BACKLOGAPI']
+  # スペースID/APIKey/課題キーを指定してオブジェクトを生成
+  def initialize(params)
+    space_id   = params[:space_id] || ENV['BACKLOG_SPACE']
+    api_key    = params[:api_ley]  || ENV['BACKLOGAPI']
+    @issue_key = params[:issue_key]
     @client = BacklogKit::Client.new(space_id: space_id, api_key: api_key)
   end
 
-  # 課題キーを指定し、現在の作業時間を取得する
-  def getWorkingTime(key)
-    issue = @client.get_issue(key)
+  # 現在の作業時間を取得する
+  def getWorkingTime
+    issue = @client.get_issue(@issue_key)
     return issue.body.actualHours
   end
 
-  # 課題キーを指定し、作業時間を書き換える
-  def writeWorkingTime(key, new_hours)
+  # 課題の作業時間を書き換える
+  def writeWorkingTime(new_hours)
     params = {:actualHours => new_hours}
-    @client.update_issue(key, params)
+    @client.update_issue(@issue_key, params)
   end
 
 end

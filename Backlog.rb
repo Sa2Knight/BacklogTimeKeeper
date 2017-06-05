@@ -9,22 +9,21 @@ class Backlog
     api_key    = params[:api_ley]  || ENV['BACKLOGAPI']
     @issue_key = params[:issue_key]
     @client = BacklogKit::Client.new(space_id: space_id, api_key: api_key)
+    begin
+      @issue  = @client.get_issue(@issue_key)
+    rescue
+      raise 'Backlogから課題を取得できませんでした'
+    end
   end
 
-  # 課題が存在するか
-  def issueIsExists?
-    begin
-      @client.get_issue(@issue_key)
-      return true
-    rescue
-      return false
-    end
+  # 課題のタイトルを取得する
+  def getTitle
+    @issue.body.summary
   end
 
   # 作業時間を取得する
   def getWorkingTime
-    issue = @client.get_issue(@issue_key)
-    return issue.body.actualHours
+    @issue.body.actualHours
   end
 
   # 作業時間を書き換える

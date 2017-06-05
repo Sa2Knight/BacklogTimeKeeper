@@ -10,18 +10,21 @@ class Main
 
   # 課題をセットする
   def set(key)
-    @tk.is_empty? or raise '課題が作業中です'
     backlog = Backlog.new(:issue_key => key)
-    backlog.issueIsExists? or raise '課題が見つかりません'
+    @tk.is_empty? or raise '課題が作業中です'
     @tk.set(key)
+    puts "#{backlog.getTitle}(#{key})を開始しました"
   end
 
   # 課題をアンセットする
   def unset
     @tk.is_empty? and raise '課題が設定されていません'
     result = @tk.unset
-    backlog = Backlog.new(:issue_key => result[:issue_key])
-    backlog.addWorkingTime(result[:diff_hours])
+    key = result[:issue_key]
+    hours_to_add = result[:diff_hours]
+    backlog = Backlog.new(:issue_key => key)
+    backlog.addWorkingTime(hours_to_add)
+    puts "#{backlog.getTitle}(#{key})を終了し、作業時間を#{hours_to_add.round(2)}時間追加しました"
   end
 
 end

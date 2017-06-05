@@ -18,7 +18,7 @@ class Backlog
   end
 
   # 作業時間を書き換える
-  def writeWorkingTime(new_hours)
+  def setWorkingTime(new_hours)
     params = {:actualHours => new_hours}
     @client.update_issue(@issue_key, params)
   end

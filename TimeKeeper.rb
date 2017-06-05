@@ -4,10 +4,7 @@ require 'time'
 
 class TimeKeeper
 
-  # workファイルのパスを指定してオブジェクトを生成
-  def initialize(file_path)
-    @file_path = file_path
-  end
+  @@file_path = './work'
 
   # workログをセット
   def set(key)
@@ -33,14 +30,14 @@ class TimeKeeper
 
   # ログファイルをHashに読み込む
   def load_json
-    File.open(@file_path) do |f|
+    File.open(@@file_path) do |f|
       JSON.load(f)
     end
   end
 
   # ログファイルにJSONを書き出す
   def write_json(params)
-    File.open(@file_path, 'w') do |f|
+    File.open(@@file_path, 'w') do |f|
       JSON.dump(params, f)
     end
   end

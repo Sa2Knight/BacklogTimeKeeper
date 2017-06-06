@@ -11,7 +11,8 @@ class Backlog
     @client = BacklogKit::Client.new(space_id: space_id, api_key: api_key)
     begin
       @issue  = @client.get_issue(@issue_key)
-    rescue
+    rescue Exception => e
+      p e
       raise 'Backlogから課題を取得できませんでした'
     end
   end

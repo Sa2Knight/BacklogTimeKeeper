@@ -6,6 +6,11 @@ class TimeKeeper
 
   @@file_path = './work'
 
+  # 対象ファイルが存在しない場合に作成する
+  def initialize
+    File.exist?(@@file_path) or File.open(@@file_path, "w").close
+  end
+
   # workログをセット
   def set(key)
     new_params = {:key => key, :datetime => Time.new.to_s}

@@ -24,7 +24,7 @@ class Backlog
 
   # 作業時間を取得する
   def getWorkingTime
-    @issue.body.actualHours
+    @issue.body.actualHours || 0
   end
 
   # 作業時間を書き換える

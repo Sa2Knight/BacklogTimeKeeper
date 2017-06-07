@@ -30,7 +30,8 @@ class Main
   # 機能3. 親課題の作業時間を記録する
   def writeParentIssueWorkingTime(key)
     backlog = Backlog.new(:issue_key => key)
-    backlog.setWorkingTime(backlog.getChildrenTotalWorkingTime)
+    result = backlog.setWorkingTime(backlog.getChildrenTotalWorkingTime)
+    result and puts "子課題の累計作業時間(#{result.body.actualHours}時間)を親課題に設定しました"
   end
 
 end

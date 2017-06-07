@@ -45,4 +45,10 @@ class Backlog
     self.setWorkingTime(new_hours)
   end
 
+  # 子課題の一覧を取得する
+  def getChildren
+    params = {parentIssueId: [self.getID]}
+    @client.get_issues(params).body
+  end
+
 end

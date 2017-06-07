@@ -17,13 +17,14 @@ class Main
   end
 
   # 機能2. 課題をアンセットする
-  def unset
+  def unset(comment = nil)
     @tk.is_empty? and raise '課題が設定されていません'
     result = @tk.unset
     key = result[:issue_key]
     hours_to_add = result[:diff_hours]
     backlog = Backlog.new(:issue_key => key)
-    backlog.addWorkingTime(hours_to_add)
+    params = comment ? {:comment => comment} : {}
+    backlog.addWorkingTime(hours_to_add, params)
     puts "#{backlog.getTitle}(#{key})を終了し、作業時間を#{hours_to_add.round(2)}時間追加しました"
   end
 
@@ -37,7 +38,7 @@ class Main
 end
 
 main = Main.new
-argv = ARGV.getopts('s:ep:')
+argv = ARGV.getopts('s:ep:m:')
 argv['s'] and main.set(argv['s'])
-argv['e'] and main.unset()
+argv['e'] and main.unset(argv['m'])
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])

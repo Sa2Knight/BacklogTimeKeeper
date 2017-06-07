@@ -33,16 +33,16 @@ class Backlog
   end
 
   # 作業時間を書き換える
-  def setWorkingTime(new_hours)
-    params = {:actualHours => new_hours.round(2)}
+  def setWorkingTime(new_hours, params = {})
+    params[:actualHours] = new_hours.round(2)
     @client.update_issue(@issue_key, params)
   end
 
   # 作業時間を加算する
-  def addWorkingTime(hours_to_add)
+  def addWorkingTime(hours_to_add, params = {})
     current_hours = self.getWorkingTime
     new_hours = current_hours + hours_to_add
-    self.setWorkingTime(new_hours)
+    self.setWorkingTime(new_hours, params)
   end
 
   # 子課題の総作業時間を取得する

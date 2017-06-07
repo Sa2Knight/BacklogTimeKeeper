@@ -45,6 +45,15 @@ class Backlog
     self.setWorkingTime(new_hours)
   end
 
+  # 子課題の総作業時間を取得する
+  def getChildrenTotalWorkingTime
+    children = self.getChildren
+    children.inject(0) do |total, child|
+      child_work_time = child.actualHours || 0
+      total + child_work_time
+    end
+  end
+
   # 子課題の一覧を取得する
   def getChildren
     params = {parentIssueId: [self.getID]}

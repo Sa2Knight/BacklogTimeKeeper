@@ -17,6 +17,11 @@ class Backlog
     end
   end
 
+  # 課題のIDを取得する
+  def getID
+    @issue.body.id
+  end
+
   # 課題のタイトルを取得する
   def getTitle
     @issue.body.summary

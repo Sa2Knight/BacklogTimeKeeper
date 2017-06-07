@@ -4,13 +4,14 @@ require 'pp'
 class Backlog
 
   # スペースID/APIKey/課題キーを指定してオブジェクトを生成
-  def initialize(params)
+  def initialize(params = {})
     space_id   = params[:space_id] || ENV['BACKLOG_SPACE']
     api_key    = params[:api_ley]  || ENV['BACKLOGAPI']
     @issue_key = params[:issue_key]
     @client = BacklogKit::Client.new(space_id: space_id, api_key: api_key)
+    @user   = @client.get_myself.body
     begin
-      @issue  = @client.get_issue(@issue_key)
+      @issue_key and @issue = @client.get_issue(@issue_key)
     rescue Exception => e
       p e
       raise 'Backlogから課題を取得できませんでした'
@@ -25,6 +26,10 @@ class Backlog
   # 課題のタイトルを取得する
   def getTitle
     @issue.body.summary
+  end
+
+  # 自身のアクティビティを取得する
+  def activity
   end
 
   # 作業時間を取得する

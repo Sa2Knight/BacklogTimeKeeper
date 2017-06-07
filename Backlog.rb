@@ -28,10 +28,6 @@ class Backlog
     @issue.body.summary
   end
 
-  # 自身のアクティビティを取得する
-  def activity
-  end
-
   # 作業時間を取得する
   def getWorkingTime
     @issue.body.actualHours || 0

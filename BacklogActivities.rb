@@ -19,6 +19,7 @@ class BacklogActivities < Backlog
       formatted_activities.push({
         :date      => Date.parse(activity.created),
         :issue_key => "#{activity.project.projectKey}-#{activity.content.key_id}",
+        :issue_summary => activity.content.summary,
         :old_value => changed_info.old_value.to_f,
         :new_value => changed_info.new_value.to_f,
       })
@@ -34,6 +35,7 @@ class BacklogActivities < Backlog
     todays_activities.each do |ac|
       aggregate[ac[:issue_key]] += ac[:new_value] - ac[:old_value]
     end
+    return aggregate
   end
 
 end

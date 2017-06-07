@@ -29,7 +29,7 @@ class Backlog
 
   # 作業時間を書き換える
   def setWorkingTime(new_hours)
-    params = {:actualHours => new_hours}
+    params = {:actualHours => new_hours.round(2)}
     @client.update_issue(@issue_key, params)
   end
 

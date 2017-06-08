@@ -33,7 +33,7 @@ class BacklogActivities < Backlog
     activities = self.activitiesChangeWorkingTimes
     todays_activities = activities.select {|a| a[:date].to_s == Date.today.to_s}
     todays_activities.each do |ac|
-      aggregate[ac[:issue_key]] += ac[:new_value] - ac[:old_value]
+      aggregate[ac[:issue_key]] = (aggregate[ac[:issue_key]] + (ac[:new_value] - ac[:old_value])).round(2)
     end
     return aggregate
   end

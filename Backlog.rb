@@ -57,7 +57,7 @@ class Backlog
 
   # 子課題の一覧を取得する
   def getChildren
-    params = {parentIssueId: [self.getID]}
+    params = {parentIssueId: [self.getID], count: 100}
     @client.get_issues(params).body
   end
 

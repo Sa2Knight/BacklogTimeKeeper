@@ -17,10 +17,10 @@ class BacklogActivities < Backlog
       changed_info = activity.content.changes.find {|c| c.field == 'actualHours'}
       changed_info or next        #作業時間の更新がないアクティビティは無視
       formatted_activities.push({
-        :date      => Date.parse(activity.created),
-        :issue_key => "#{activity.project.projectKey}-#{activity.content.key_id}",
-        :old_value => changed_info.old_value.to_f,
-        :new_value => changed_info.new_value.to_f,
+        :date        => Date.parse(activity.created),
+        :issue_key   => "#{activity.project.projectKey}-#{activity.content.key_id}",
+        :old_value   => changed_info.old_value.to_f,
+        :new_value   => changed_info.new_value.to_f,
       })
     end
     return formatted_activities
@@ -35,22 +35,36 @@ class BacklogActivities < Backlog
     activities = self.activitiesChangeWorkingTimes
     todays_activities = activities.select {|a| a[:date].to_s == today}
     todays_activities.each do |ac|
-      aggregate[ac[:issue_key]] = (aggregate[ac[:issue_key]] + (ac[:new_value] - ac[:old_value])).round(2)
+      aggregate[ac[:issue_key]] = (aggregate[ac[:issue_key]] + (ac[:new_value] - ac[:old_value]))
     end
-    # 各課題についての情報を取得し整理、その際に親課題は取り除く
-    issues = []
-    total_working_time = 0.0
-    aggregate.each do |key, val|
+
+    # 親課題を取り除く
+    aggregate = aggregate.reject do |key, val|
       issue_info = @client.get_issue(key).body
-      next if self.isParentIssue?(issue_info.id)
-      issues.push({
-        :key      => issue_info.issueKey,
-        :summary  => issue_info.summary,
-        :hours    => val,
-      })
-      total_working_time += val
+      self.isParentIssue?(issue_info.id)
     end
-    return {:date => today, :total => total_working_time.round(2), :issues => issues}
+
+    # 各課題についてプロジェクトごとに分割しする
+    projects = Hash.new {|h, k| h[k] = {total: 0.0, issues: []}}
+    aggregate.each do |key, val|
+      project_key = key.split('-')[0]
+      projects[project_key][:issues].push({
+        key:   key,
+        hours: val,
+      })
+    end
+
+    # プロジェクトごとの総作業時間を取得
+    projects.keys.each do |key|
+      projects[key][:total] = projects[key][:issues].inject(0.0) {|sum, i| sum + i[:hours]}.round(2)
+    end
+
+    # 総作業時間を含めて戻す
+    return {
+      date:     today,
+      projects: projects,
+      total:    projects.values.inject(0.0) {|sum, p| sum + p[:total]}.round(2),
+    }
   end
 
   # 指定した課題が親課題であるかを戻す

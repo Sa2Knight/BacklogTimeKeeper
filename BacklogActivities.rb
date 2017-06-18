@@ -1,5 +1,7 @@
 require 'date'
+require 'pp'
 require_relative 'Backlog'
+require_relative 'Util'
 
 class BacklogActivities < Backlog
 
@@ -8,14 +10,18 @@ class BacklogActivities < Backlog
   end
 
   # 期間を指定してアクティビティを取得
-  def getUserActivities(date_from, date_to)
-    activities_params = {:activityTypeId => [2], :count => 100}
-    @client.get_user_activities(@user.id, activities_params).body
+  def getUserActivities(date_from, date_to, params = {})
+    params[:count] = 100
+    activities = @client.get_user_activities(@user.id, params).body
+    activities.select do |ac|
+      date = Util.slide9hours(ac.created).to_date # タイムゾーン調整
+      Util.periodIn?(date, date_from, date_to)
+    end
   end
 
   # アクティビティから、作業時間の変更アクティビティを整形して抜き出す
-  def activitiesChangeWorkingTimes
-    activities = self.getUserActivities(nil, nil)
+  def activitiesChangeWorkingTimes(date_from, date_to)
+    activities = self.getUserActivities(date_from, date_to, :activityTypeId => [2])
     formatted_activities = []
     activities = activities.each do |activity|
       changed_info = activity.content.changes.find {|c| c.field == 'actualHours'}
@@ -34,11 +40,10 @@ class BacklogActivities < Backlog
   # 課題数×２回APIを呼んでしまうので注意
   def todaysTotalWorkingTimes
     # アクティビティリストから本日分のアクティビティのみ抜き出す
-    today = '2017-06-14'
+    today = Date.today.to_s
     aggregate = Hash.new(0)
-    activities = self.activitiesChangeWorkingTimes
-    todays_activities = activities.select {|a| a[:date].to_s == today}
-    todays_activities.each do |ac|
+    activities = self.activitiesChangeWorkingTimes(today, today)
+    activities.each do |ac|
       aggregate[ac[:issue_key]] = (aggregate[ac[:issue_key]] + (ac[:new_value] - ac[:old_value]))
     end
 
@@ -54,7 +59,7 @@ class BacklogActivities < Backlog
       project_key = key.split('-')[0]
       projects[project_key][:issues].push({
         key:   key,
-        hours: val,
+        hours: val.round(2),
       })
     end
 

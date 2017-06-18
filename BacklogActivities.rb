@@ -3,17 +3,21 @@ require_relative 'Backlog'
 
 class BacklogActivities < Backlog
 
-  # Backlogクラスのイニシャライザを呼び、ユーザのアクティビティを取得する
   def initialize(params = {})
     super(params)
+  end
+
+  # 期間を指定してアクティビティを取得
+  def getUserActivities(date_from, date_to)
     activities_params = {:activityTypeId => [2], :count => 100}
-    @activities = @client.get_user_activities(@user.id, activities_params).body
+    @client.get_user_activities(@user.id, activities_params).body
   end
 
   # アクティビティから、作業時間の変更アクティビティを整形して抜き出す
   def activitiesChangeWorkingTimes
+    activities = self.getUserActivities(nil, nil)
     formatted_activities = []
-    activities = @activities.each do |activity|
+    activities = activities.each do |activity|
       changed_info = activity.content.changes.find {|c| c.field == 'actualHours'}
       changed_info or next        #作業時間の更新がないアクティビティは無視
       formatted_activities.push({
@@ -30,7 +34,7 @@ class BacklogActivities < Backlog
   # 課題数×２回APIを呼んでしまうので注意
   def todaysTotalWorkingTimes
     # アクティビティリストから本日分のアクティビティのみ抜き出す
-    today = Date.today.to_s
+    today = '2017-06-14'
     aggregate = Hash.new(0)
     activities = self.activitiesChangeWorkingTimes
     todays_activities = activities.select {|a| a[:date].to_s == today}

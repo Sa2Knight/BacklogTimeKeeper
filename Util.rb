@@ -35,4 +35,10 @@ class Util
     }
   end
 
+  # 日付時刻文字列を9時間進めてDateTimeオブジェクトに変換する
+  def self.slide9hours(datetime)
+    datetime.class == String and datetime = DateTime.parse(datetime)
+    return datetime + Rational(9, 24)
+  end
+
 end

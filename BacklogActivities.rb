@@ -47,8 +47,11 @@ class BacklogActivities < Backlog
       aggregate[ac[:issue_key]] = (aggregate[ac[:issue_key]] + (ac[:new_value] - ac[:old_value]))
     end
 
+    # 結果的に作業時間が0の課題は取り除く
+    aggregate.reject! {|key, val| val == 0.0}
+
     # 親課題を取り除く
-    aggregate = aggregate.reject do |key, val|
+    aggregate.reject! do |key, val|
       issue_info = @client.get_issue(key).body
       self.isParentIssue?(issue_info.id)
     end

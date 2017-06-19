@@ -1,5 +1,6 @@
 require 'optparse'
 require_relative 'Backlog'
+require_relative 'BacklogActivities'
 require_relative 'TimeKeeper'
 
 class Main
@@ -35,10 +36,17 @@ class Main
     result and puts "子課題の累計作業時間(#{result.body.actualHours}時間)を親課題に設定しました"
   end
 
+  # 機能4. 本日の作業ログを出力
+  def getTodaysWorkingTimes
+    backlog = BacklogActivities.new
+    pp backlog.todaysTotalWorkingTimes
+  end
+
 end
 
 main = Main.new
-argv = ARGV.getopts('s:ep:m:')
+argv = ARGV.getopts('s:ep:m:t')
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset(argv['m'])
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])
+argv['t'] and main.getTodaysWorkingTimes

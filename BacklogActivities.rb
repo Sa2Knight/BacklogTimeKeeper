@@ -5,17 +5,28 @@ require_relative 'Util'
 
 class BacklogActivities < Backlog
 
+  @@ACTIVITIES_MAX = 100
+  @@SLEEP_SEC      = 1
+
   def initialize(params = {})
     super(params)
   end
 
   # 期間を指定してアクティビティを取得
   def getUserActivities(date_from, date_to, params = {})
-    params[:count] = 100
+    params[:count] = @@ACTIVITIES_MAX
     activities = @client.get_user_activities(@user.id, params).body
-    activities.select do |ac|
+    activities.select! do |ac|
       date = Util.slide9hours(ac.created).to_date # タイムゾーン調整
       Util.periodIn?(date, date_from, date_to)
+    end
+
+    # 該当のアクティビティを取得しきれなければ再帰呼出し
+    if activities.count == @@ACTIVITIES_MAX
+      params[:maxId] = activities[-1].id
+      return activities.concat self.getUserActivities(date_from, date_to, params)
+    else
+      return activities
     end
   end
 
@@ -37,7 +48,7 @@ class BacklogActivities < Backlog
   end
 
   # 本日の課題毎の作業時間を集計する
-  # 課題数×２回APIを呼んでしまうので注意
+  # 課題数分だけAPIを呼んでしまうので注意というか治したい
   def todaysTotalWorkingTimes
     # アクティビティリストから本日分のアクティビティのみ抜き出す
     today = Date.today.to_s

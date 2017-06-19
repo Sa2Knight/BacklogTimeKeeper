@@ -9,6 +9,7 @@ class BacklogActivities < Backlog
   @@SLEEP_SEC      = 1
 
   def initialize(params = {})
+    @issues = {}
     super(params)
   end
 
@@ -17,6 +18,7 @@ class BacklogActivities < Backlog
     params[:count] = @@ACTIVITIES_MAX
     activities = @client.get_user_activities(@user.id, params).body
     activities.select! do |ac|
+      self.addIssue(ac)
       date = Util.slide9hours(ac.created).to_date # タイムゾーン調整
       Util.periodIn?(date, date_from, date_to)
     end
@@ -48,7 +50,6 @@ class BacklogActivities < Backlog
   end
 
   # 本日の課題毎の作業時間を集計する
-  # 課題数分だけAPIを呼んでしまうので注意というか治したい
   def todaysTotalWorkingTimes
     # アクティビティリストから本日分のアクティビティのみ抜き出す
     today = Date.today.to_s
@@ -58,13 +59,9 @@ class BacklogActivities < Backlog
       aggregate[ac[:issue_key]] = (aggregate[ac[:issue_key]] + (ac[:new_value] - ac[:old_value]))
     end
 
-    # 結果的に作業時間が0の課題は取り除く
-    aggregate.reject! {|key, val| val == 0.0}
-
-    # 親課題を取り除く
+    # 作業時間が0の課題と親課題を取り除く
     aggregate.reject! do |key, val|
-      issue_info = @client.get_issue(key).body
-      self.isParentIssue?(issue_info.id)
+      val == 0.0 || @issues[key][:is_parent]
     end
 
     # 各課題についてプロジェクトごとに分割しする
@@ -90,10 +87,14 @@ class BacklogActivities < Backlog
     }
   end
 
-  # 指定した課題が親課題であるかを戻す
-  def isParentIssue?(issue_id)
-    params = {:parentIssueId => [issue_id]}
-    @client.get_issues(params).body.count > 0
+  # アクティビティを元に課題情報をキャッシュする
+  def addIssue(activity)
+    key     = "#{activity.project.projectKey}-#{activity.content.key_id}"
+    summary = activity.content.summary
+    @issues[key] or @issues[key] = {
+      summary:   summary,
+      is_parent: !!summary.index('【親課題】')
+    }
   end
 
 end

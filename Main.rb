@@ -3,6 +3,7 @@ require 'date'
 require_relative 'Backlog'
 require_relative 'BacklogActivities'
 require_relative 'TimeKeeper'
+require_relative 'Util'
 
 class Main
 
@@ -44,11 +45,19 @@ class Main
     pp backlog.aggregateTotalWorkingTimes(today, today)
   end
 
+  # 機能5. 今週の作業ログを出力
+  def getThisWeeksWorkingTimes
+    days = Util.getWeeklyDate(Date.today)
+    backlog = BacklogActivities.new
+    pp backlog.aggregateTotalWorkingTimes(days[:date_from], days[:date_to])
+  end
+
 end
 
 main = Main.new
-argv = ARGV.getopts('s:ep:m:t')
+argv = ARGV.getopts('s:ep:m:tw')
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset(argv['m'])
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])
 argv['t'] and main.getTodaysWorkingTimes
+argv['w'] and main.getThisWeeksWorkingTimes

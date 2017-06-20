@@ -1,4 +1,5 @@
 require 'optparse'
+require 'date'
 require_relative 'Backlog'
 require_relative 'BacklogActivities'
 require_relative 'TimeKeeper'
@@ -38,8 +39,9 @@ class Main
 
   # 機能4. 本日の作業ログを出力
   def getTodaysWorkingTimes
+    today = Date.today.to_s
     backlog = BacklogActivities.new
-    pp backlog.todaysTotalWorkingTimes
+    pp backlog.aggregateTotalWorkingTimes(today, today)
   end
 
 end

@@ -49,12 +49,11 @@ class BacklogActivities < Backlog
     return formatted_activities
   end
 
-  # 本日の課題毎の作業時間を集計する
-  def todaysTotalWorkingTimes
-    # アクティビティリストから本日分のアクティビティのみ抜き出す
-    today = Date.today.to_s
+  # 指定した期間の課題毎の作業時間を集計する
+  def aggregateTotalWorkingTimes(date_from, date_to)
+    # 指定期間の作業時間に関するアクティビティのみ抜き出す
     aggregate = Hash.new(0)
-    activities = self.activitiesChangeWorkingTimes(today, today)
+    activities = self.activitiesChangeWorkingTimes(date_from, date_to)
     activities.each do |ac|
       aggregate[ac[:issue_key]] = (aggregate[ac[:issue_key]] + (ac[:new_value] - ac[:old_value]))
     end
@@ -81,9 +80,10 @@ class BacklogActivities < Backlog
 
     # 総作業時間を含めて戻す
     return {
-      date:     today,
-      projects: projects,
-      total:    projects.values.inject(0.0) {|sum, p| sum + p[:total]}.round(2),
+      date_from:  date_from,
+      date_to:    date_to,
+      projects:   projects,
+      total:      projects.values.inject(0.0) {|sum, p| sum + p[:total]}.round(2),
     }
   end
 

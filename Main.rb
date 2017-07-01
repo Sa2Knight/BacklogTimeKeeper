@@ -2,6 +2,7 @@ require 'optparse'
 require 'date'
 require_relative 'Backlog'
 require_relative 'BacklogActivities'
+require_relative 'BacklogPostIssue'
 require_relative 'TimeKeeper'
 require_relative 'Util'
 
@@ -42,22 +43,30 @@ class Main
   def getTodaysWorkingTimes
     today = Date.today.to_s
     backlog = BacklogActivities.new
-    pp backlog.aggregateTotalWorkingTimes(today, today)
+    backlog.aggregateTotalWorkingTimes(today, today)
   end
 
   # 機能5. 今週の作業ログを出力
   def getThisWeeksWorkingTimes
     days = Util.getWeeklyDate(Date.today)
     backlog = BacklogActivities.new
-    pp backlog.aggregateTotalWorkingTimes(days[:date_from], days[:date_to])
+    backlog.aggregateTotalWorkingTimes(days[:date_from], days[:date_to])
+  end
+
+  # 機能6. 機能5を使用してBacklogに作業ログを投稿する
+  def postThisWeeksWorkingTimes
+    logs = getThisWeeksWorkingTimes
+    backlog = BacklogPostIssue.new(logs)
+    pp backlog.postIssue
   end
 
 end
 
 main = Main.new
-argv = ARGV.getopts('s:ep:m:tw')
+argv = ARGV.getopts('s:ep:m:twc')
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset(argv['m'])
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])
-argv['t'] and main.getTodaysWorkingTimes
-argv['w'] and main.getThisWeeksWorkingTimes
+argv['t'] and pp main.getTodaysWorkingTimes
+argv['w'] and pp main.getThisWeeksWorkingTimes
+argv['c'] and main.postThisWeeksWorkingTimes

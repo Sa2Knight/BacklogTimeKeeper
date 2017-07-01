@@ -68,8 +68,9 @@ class BacklogActivities < Backlog
     aggregate.each do |key, val|
       project_key = key.split('-')[0]
       projects[project_key][:issues].push({
-        key:   key,
-        hours: val.round(2),
+        key:     key,
+        summary: @issues[key][:summary],
+        hours:   val.round(2),
       })
     end
 

@@ -30,7 +30,8 @@ class BacklogPostIssue < Backlog
     # 課題本文を生成
     def makeContent
       contents = []
-      @logs[:projects].each do |key, val|
+      projects = @logs[:projects].sort {|(k1,v1), (k2,v2)| v2[:total] <=> v1[:total]}
+      projects.each do |key, val|
         contents << makeProjectHeader(key)
         contents.concat(makeProjectIssues(key))
       end
@@ -46,7 +47,8 @@ class BacklogPostIssue < Backlog
     # 課題ごとの作業時間記録を生成
     def makeProjectIssues(project_key)
       issues = []
-      @logs[:projects][project_key][:issues].each do |i|
+      logs = @logs[:projects][project_key][:issues].sort {|a, b| b[:hours] <=> a[:hours]}
+      logs.each do |i|
         issues << "- #{i[:key]} #{i[:summary]} (#{i[:hours]}時間)"
       end
       issues

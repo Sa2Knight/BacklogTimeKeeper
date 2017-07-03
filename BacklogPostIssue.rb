@@ -67,4 +67,14 @@ class BacklogPostIssue < Backlog
       issues
     end
 
+    # 課題名に合致する課題を取得(複数ある場合も先頭のみ)
+    def getIssueBySummary(summary)
+      params = {
+        projectId:   [@@PROJECT_ID],
+        categoryId: [@@CATEGORY_ID],
+        keyword:     summary,
+      }
+      @client.get_issues(params).body.first
+    end
+
 end

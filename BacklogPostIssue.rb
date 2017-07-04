@@ -67,7 +67,7 @@ class BacklogPostIssue < Backlog
     # プロジェクトごとの見出しを生成
     def makeProjectHeader(project_key)
       project = @logs[:projects][project_key]
-      return "** #{project_key} #{project[:total]}時間"
+      return "** #{project_key} #{project[:total]}時間(#{project[:rate]}%)"
     end
 
     # 課題ごとの作業時間記録を生成

@@ -79,6 +79,12 @@ class BacklogActivities < Backlog
       projects[key][:total] = projects[key][:issues].inject(0.0) {|sum, i| sum + i[:hours]}.round(2)
     end
 
+    # 全作業時間の和を求め、ソレに対するプロジェクトごとの割合を計算
+    total_working_times = projects.values.inject(0.0) {|sum, p| sum + p[:total]}.round(2)
+    projects.keys.each do |key|
+      projects[key][:rate] = (projects[key][:total] / total_working_times * 100).round(2)
+    end
+
     # 総作業時間を含めて戻す
     return {
       date_from:  date_from,

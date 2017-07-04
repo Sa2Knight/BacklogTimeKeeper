@@ -15,21 +15,35 @@ class BacklogPostIssue < Backlog
     super(params)
   end
 
+  # 作業ログを投稿
+  # 既に該当の課題が存在すればそれの本文を更新
+  # 該当する課題が無い場合新規作成
   def postIssue
-    params = {
-      projectId:   @@PROJECT_ID,
-      description: makeDescription,
-      assigneeId:  @user.id,
-      priorityId:  @@PRIORITY_ID,
-      issueTypeId: @@ISSUE_TYPE_ID,
-      categoryId:  [@@CATEGORY_ID],
-      startDate:   @logs[:date_from].to_s,
-      dueDate:     @logs[:date_to].to_s,
-    }
-    @client.create_issue(makeSummary, params)
+    current_issue = getIssueBySummary(makeSummary)
+    current_issue ? updateIssue(current_issue.id) : createIssue
   end
 
   private
+
+    # 課題を新規作成して作業ログを投稿
+    def createIssue
+      params = {
+        projectId:   @@PROJECT_ID,
+        description: makeDescription,
+        assigneeId:  @user.id,
+        priorityId:  @@PRIORITY_ID,
+        issueTypeId: @@ISSUE_TYPE_ID,
+        categoryId:  [@@CATEGORY_ID],
+        startDate:   @logs[:date_from].to_s,
+        dueDate:     @logs[:date_to].to_s,
+      }
+      @client.create_issue(makeSummary, params)
+    end
+
+    # 課題を更新して作業ログを投稿
+    def updateIssue(id)
+      @client.update_issue(id, description: makeDescription)
+    end
 
     # 課題タイトルを生成
     def makeSummary

@@ -8,7 +8,6 @@ class BacklogActivities < Backlog
   @@ACTIVITIES_MAX = 100
   @@SLEEP_SEC      = 1
   @@PARENT_ISSUE_WORD = '【親課題】'
-  @@INCOMPLETE_STATUSES = [1, 2, 3] # 未対応,処理中,処理済み
 
   def initialize(params = {})
     @issues = {}
@@ -117,17 +116,6 @@ class BacklogActivities < Backlog
         summary:   summary,
         is_parent: !!summary.index(@@PARENT_ISSUE_WORD)
       }
-    end
-
-    # 未完了の親課題の課題キー一覧を取得する
-    #----------------------------------------------
-    def getIncompleteIssues
-      params = {
-        assigneeId:  [@user.id],
-        statusId:    @@INCOMPLETE_STATUSES,
-        parentChild: 4 #親課題
-      }
-      @client.get_issues(params).body.map {|issue| issue.issue_key}
     end
 
 end

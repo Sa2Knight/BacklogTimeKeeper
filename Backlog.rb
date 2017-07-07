@@ -3,6 +3,8 @@ require 'pp'
 
 class Backlog
 
+  @@INCOMPLETE_STATUSES = [1, 2, 3] # 未対応,処理中,処理済み
+
   # スペースID/APIKey/課題キーを指定してオブジェクトを生成
   # params: 各種初期化データ 基本的にissue_key以外空で良い
   #--------------------------------------------------------
@@ -72,6 +74,17 @@ class Backlog
   def getChildren
     params = {parentIssueId: [self.getID], count: 100}
     @client.get_issues(params).body
+  end
+
+  # 未完了の親課題の課題キー一覧を取得する
+  #----------------------------------------------
+  def getIncompleteParentIssues
+    params = {
+      assigneeId:  [@user.id],
+      statusId:    @@INCOMPLETE_STATUSES,
+      parentChild: 4 #親課題
+    }
+    @client.get_issues(params).body.map {|issue| issue.issue_key}
   end
 
 end

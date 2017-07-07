@@ -35,25 +35,44 @@ class Main
   # 機能3. 親課題の作業時間を記録する
   def writeParentIssueWorkingTime(key)
     backlog = Backlog.new(:issue_key => key)
-    result = backlog.setWorkingTime(backlog.getChildrenTotalWorkingTime)
-    result and puts "子課題の累計作業時間(#{result.body.actualHours}時間)を親課題に設定しました"
+    begin
+      result = backlog.setWorkingTime(backlog.getChildrenTotalWorkingTime).body
+      result and puts "子課題の累計作業時間(#{result.actualHours}時間)を親課題(#{result.summary})に設定しました"
+    rescue => e
+      if e.message == "[ERROR 1] InvalidRequestError - Please change the status or post a comment. (CODE: 7)"
+        puts "更新なし: #{key} #{backlog.getTitle}"
+      else
+        puts "その他のエラーが発生したためプログラムを終了します"
+        pp e
+        exit
+      end
+    end
   end
 
-  # 機能4. 本日の作業ログを出力
+  # 機能4. 未完了全ての親課題について、機能3を実行する
+  def writeAllParentIssueWorkingTimes
+    backlog = Backlog.new
+    incomplete_parent_issues = backlog.getIncompleteParentIssues
+    incomplete_parent_issues.each do |issue|
+      writeParentIssueWorkingTime(issue)
+    end
+  end
+
+  # 機能5. 本日の作業ログを出力
   def getTodaysWorkingTimes
     today = Date.today.to_s
     backlog = BacklogActivities.new
     backlog.aggregateTotalWorkingTimes(today, today)
   end
 
-  # 機能5. 今週の作業ログを出力
+  # 機能6. 今週の作業ログを出力
   def getThisWeeksWorkingTimes
     days = Util.getWeeklyDate(Date.today)
     backlog = BacklogActivities.new
     backlog.aggregateTotalWorkingTimes(days[:date_from], days[:date_to])
   end
 
-  # 機能6. 機能5を使用してBacklogに作業ログを投稿する
+  # 機能7. 機能6を使用してBacklogに作業ログを投稿する
   def postThisWeeksWorkingTimes
     logs = getThisWeeksWorkingTimes
     backlog = BacklogPostIssue.new(logs)
@@ -63,10 +82,11 @@ class Main
 end
 
 main = Main.new
-argv = ARGV.getopts('s:ep:m:twc')
+argv = ARGV.getopts('s:ep:Pm:twc')
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset(argv['m'])
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])
+argv['P'] and main.writeAllParentIssueWorkingTimes
 argv['t'] and pp main.getTodaysWorkingTimes
 argv['w'] and pp main.getThisWeeksWorkingTimes
 argv['c'] and main.postThisWeeksWorkingTimes

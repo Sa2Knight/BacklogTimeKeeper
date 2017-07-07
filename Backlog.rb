@@ -3,7 +3,7 @@ require 'pp'
 
 class Backlog
 
-  @@INCOMPLETE_STATUSES = [1, 2, 3] # 未対応,処理中,処理済み
+  @@INCOMPLETE_STATUSES = [1, 2] # 未対応,処理中
 
   # スペースID/APIKey/課題キーを指定してオブジェクトを生成
   # params: 各種初期化データ 基本的にissue_key以外空で良い

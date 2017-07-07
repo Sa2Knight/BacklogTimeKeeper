@@ -4,6 +4,8 @@ require 'pp'
 class Backlog
 
   # スペースID/APIKey/課題キーを指定してオブジェクトを生成
+  # params: 各種初期化データ 基本的にissue_key以外空で良い
+  #--------------------------------------------------------
   def initialize(params = {})
     space_id   = params[:space_id] || ENV['BACKLOG_SPACE']
     api_key    = params[:api_ley]  || ENV['BACKLOGAPI']
@@ -19,27 +21,36 @@ class Backlog
   end
 
   # 課題のIDを取得する
+  #--------------------
   def getID
     @issue.body.id
   end
 
   # 課題のタイトルを取得する
+  #-------------------------
   def getTitle
     @issue.body.summary
   end
 
   # 作業時間を取得する
+  #-------------------
   def getWorkingTime
     @issue.body.actualHours || 0
   end
 
   # 作業時間を書き換える
+  # new_hors: 書き換え後の作業時間
+  # params:   APIに投げる追加オプション
+  #------------------------------------------
   def setWorkingTime(new_hours, params = {})
     params[:actualHours] = new_hours.round(2)
     @client.update_issue(@issue_key, params)
   end
 
   # 作業時間を加算する
+  # hours_to_add: 加算する作業時間
+  # params:       APIに投げる追加オプション
+  #--------------------------------------------
   def addWorkingTime(hours_to_add, params = {})
     current_hours = self.getWorkingTime
     new_hours = current_hours + hours_to_add
@@ -47,6 +58,7 @@ class Backlog
   end
 
   # 子課題の総作業時間を取得する
+  #-------------------------------
   def getChildrenTotalWorkingTime
     children = self.getChildren
     children.inject(0) do |total, child|
@@ -56,6 +68,7 @@ class Backlog
   end
 
   # 子課題の一覧を取得する
+  #------------------------
   def getChildren
     params = {parentIssueId: [self.getID], count: 100}
     @client.get_issues(params).body

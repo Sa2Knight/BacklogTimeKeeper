@@ -27,6 +27,8 @@ class TimeKeeper
     return {
       :issue_key  => params['key'],
       :diff_hours => diff_hours,
+      :time_from  => time_from.strftime('%H:%M'),
+      :time_to    => time_to.strftime('%H:%M'),
     }
   end
 

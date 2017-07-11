@@ -82,7 +82,7 @@ class Main
 end
 
 main = Main.new
-argv = ARGV.getopts('s:ep:P:twc')
+argv = ARGV.getopts('s:ep:Ptwc')
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])

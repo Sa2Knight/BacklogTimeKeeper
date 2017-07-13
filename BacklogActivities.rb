@@ -80,6 +80,7 @@ class BacklogActivities < Backlog
       # 該当のアクティビティを取得しきれなければ再帰呼出し
       if activities.count == @@ACTIVITIES_MAX
         params[:maxId] = activities[-1].id
+        puts "アクティビティ取得中"
         sleep @@SLEEP_SEC
         return activities.concat getUserActivities(date_from, date_to, params)
       else

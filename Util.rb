@@ -35,6 +35,15 @@ class Util
     }
   end
 
+  # 指定した日を含む月の初日と最終日の日付を取得
+  def self.getMonthlyDate(date)
+    date = Util.strToDate(date)
+    return {
+      date_from: Date.new(date.year, date.month),
+      date_to:   Date.new(date.year, date.month, -1),
+    }
+  end
+
   # 日付時刻文字列を9時間進めてDateTimeオブジェクトに変換する
   def self.slide9hours(datetime)
     datetime.class == String and datetime = DateTime.parse(datetime)

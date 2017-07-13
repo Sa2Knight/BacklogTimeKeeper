@@ -6,7 +6,7 @@ require_relative 'Util'
 class BacklogActivities < Backlog
 
   @@ACTIVITIES_MAX = 100
-  @@SLEEP_SEC      = 1
+  @@SLEEP_SEC      = 2
   @@PARENT_ISSUE_WORD = '【親課題】'
 
   def initialize(params = {})
@@ -80,6 +80,7 @@ class BacklogActivities < Backlog
       # 該当のアクティビティを取得しきれなければ再帰呼出し
       if activities.count == @@ACTIVITIES_MAX
         params[:maxId] = activities[-1].id
+        sleep @@SLEEP_SEC
         return activities.concat getUserActivities(date_from, date_to, params)
       else
         return activities

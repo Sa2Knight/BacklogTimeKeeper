@@ -26,9 +26,9 @@ class BacklogActivities < Backlog
       aggregate[ac[:issue_key]] = (aggregate[ac[:issue_key]] + (ac[:new_value] - ac[:old_value]))
     end
 
-    # 作業時間が0の課題と親課題を取り除く
+    # 作業時間が0以下の課題と親課題を取り除く
     aggregate.reject! do |key, val|
-      val == 0.0 || @issues[key][:is_parent]
+      val <= 0.0 || @issues[key][:is_parent]
     end
 
     # 各課題についてプロジェクトごとに分割しする

@@ -10,23 +10,28 @@ class BacklogPostIssue < Backlog
   @@PRIORITY_ID   = 4       # 優先度:   低
   @@CATEGORY_ID   = 214638  # カテゴリ: 定例
 
-  def initialize(logs, opt = {})
+  def initialize(logs)
     @logs = logs
-    super(opt);
+    super;
   end
 
   # 作業ログを投稿
   # 既に該当の課題が存在すればそれの本文を更新
   # 該当する課題が無い場合新規作成
   #-------------------------------------------------
-  def postIssue
+  def postIssue(opt = {})
     current_issue = getIssueBySummary(makeSummary)
-    current_issue ? updateIssue(current_issue.id) : createIssue
+    if current_issue
+      updateIssue(current_issue.id, opt)
+    else
+      created_id = createIssue.body.id
+      opt[:comment] and postComment(created_id, opt[:comment])
+    end
   end
 
   # 課題を新規作成して作業ログを投稿
   #----------------------------------
-  def createIssue
+  def createIssue(opt_params = {})
     params = {
       projectId:   @@PROJECT_ID,
       description: makeDescription,
@@ -36,7 +41,7 @@ class BacklogPostIssue < Backlog
       categoryId:  [@@CATEGORY_ID],
       startDate:   @logs[:date_from].to_s,
       dueDate:     @logs[:date_to].to_s,
-    }
+    }.merge(opt_params)
     @client.create_issue(makeSummary, params)
   end
 
@@ -47,6 +52,14 @@ class BacklogPostIssue < Backlog
     @client.update_issue(id, description: makeDescription)
   end
 
+  # 課題にコメントを投稿する
+  # id: 投稿する課題のID
+  # comment: 投稿するコメント
+  #-----------------------------
+  def postComment(id, comment)
+    @client.update_issue(id, comment: comment)
+  end
+
   # 課題タイトルを生成
   #-----------------------------
   def makeSummary
@@ -54,7 +67,7 @@ class BacklogPostIssue < Backlog
     date_from = Util.strToDate(@logs[:date_from]).strftime('%m/%d')
     date_to   = Util.strToDate(@logs[:date_to]).strftime('%m/%d')
     if date_from === date_to
-      return "[#{name}] 日報 #{date_from}"
+      return "[#{name}] #{date_from}"
     else
       return "[#{name}] #{date_from}~#{date_to}"
     end
@@ -77,7 +90,7 @@ class BacklogPostIssue < Backlog
     # 全体の見出しを生成
     #------------------------------------
     def makeHeader
-      "** 累計 #{@logs[:total]}時間 #{Time.now.strftime('(%m/%d %H:%M 時点)')}"
+      "** #{self.makeSummary} #{@logs[:total]}時間"
     end
 
     # プロジェクトごとの見出しを生成

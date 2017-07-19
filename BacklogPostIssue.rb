@@ -10,9 +10,9 @@ class BacklogPostIssue < Backlog
   @@PRIORITY_ID   = 4       # 優先度:   低
   @@CATEGORY_ID   = 214638  # カテゴリ: 定例
 
-  def initialize(logs, params = {})
+  def initialize(logs, opt = {})
     @logs = logs
-    super(params)
+    super(opt);
   end
 
   # 作業ログを投稿
@@ -24,51 +24,55 @@ class BacklogPostIssue < Backlog
     current_issue ? updateIssue(current_issue.id) : createIssue
   end
 
-  private
+  # 課題を新規作成して作業ログを投稿
+  #----------------------------------
+  def createIssue
+    params = {
+      projectId:   @@PROJECT_ID,
+      description: makeDescription,
+      assigneeId:  @user.id,
+      priorityId:  @@PRIORITY_ID,
+      issueTypeId: @@ISSUE_TYPE_ID,
+      categoryId:  [@@CATEGORY_ID],
+      startDate:   @logs[:date_from].to_s,
+      dueDate:     @logs[:date_to].to_s,
+    }
+    @client.create_issue(makeSummary, params)
+  end
 
-    # 課題を新規作成して作業ログを投稿
-    #----------------------------------
-    def createIssue
-      params = {
-        projectId:   @@PROJECT_ID,
-        description: makeDescription,
-        assigneeId:  @user.id,
-        priorityId:  @@PRIORITY_ID,
-        issueTypeId: @@ISSUE_TYPE_ID,
-        categoryId:  [@@CATEGORY_ID],
-        startDate:   @logs[:date_from].to_s,
-        dueDate:     @logs[:date_to].to_s,
-      }
-      @client.create_issue(makeSummary, params)
-    end
+  # 課題を更新して作業ログを投稿
+  # id: 更新する課題のID
+  #------------------------------
+  def updateIssue(id)
+    @client.update_issue(id, description: makeDescription)
+  end
 
-    # 課題を更新して作業ログを投稿
-    # id: 更新する課題のID
-    #------------------------------
-    def updateIssue(id)
-      @client.update_issue(id, description: makeDescription)
-    end
-
-    # 課題タイトルを生成
-    #-----------------------------
-    def makeSummary
-      name = @user.name
-      date_from = @logs[:date_from].strftime('%m/%d')
-      date_to   = @logs[:date_to].strftime('%m/%d')
+  # 課題タイトルを生成
+  #-----------------------------
+  def makeSummary
+    name = @user.name
+    date_from = Util.strToDate(@logs[:date_from]).strftime('%m/%d')
+    date_to   = Util.strToDate(@logs[:date_to]).strftime('%m/%d')
+    if date_from === date_to
+      return "[#{name}] 日報 #{date_from}"
+    else
       return "[#{name}] #{date_from}~#{date_to}"
     end
+  end
 
-    # 課題本文を生成
-    #----------------------------
-    def makeDescription
-      descriptions = [makeHeader]
-      projects = @logs[:projects].sort {|(k1,v1), (k2,v2)| v2[:total] <=> v1[:total]}
-      projects.each do |key, val|
-        descriptions << makeProjectHeader(key)
-        descriptions.concat(makeProjectIssues(key))
-      end
-      descriptions.join("\n")
+  # 課題本文を生成
+  #----------------------------
+  def makeDescription
+    descriptions = [makeHeader]
+    projects = @logs[:projects].sort {|(k1,v1), (k2,v2)| v2[:total] <=> v1[:total]}
+    projects.each do |key, val|
+      descriptions << makeProjectHeader(key)
+      descriptions.concat(makeProjectIssues(key))
     end
+    descriptions.join("\n")
+  end
+
+  private
 
     # 全体の見出しを生成
     #------------------------------------

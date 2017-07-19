@@ -73,10 +73,15 @@ class Main
   end
 
   # 機能7. 機能6を使用してBacklogに作業ログを投稿する
-  def postThisWeeksWorkingTimes
-    logs = getThisWeeksWorkingTimes
-    backlog = BacklogPostIssue.new(logs)
-    pp backlog.postIssue
+  def postThisWeeksWorkingTimes(with_todays)
+    opt = {}
+    weeks_backlog = BacklogPostIssue.new(getThisWeeksWorkingTimes)
+    if with_todays
+      todays_logs = getTodaysWorkingTimes
+      todays_backlog = BacklogPostIssue.new(getTodaysWorkingTimes)
+      opt[:comment] = todays_backlog.makeDescription
+    end
+    weeks_backlog.postIssue(opt)
   end
 
   # 機能8. 今月の作業ログを出力
@@ -89,7 +94,7 @@ class Main
 end
 
 main = Main.new
-argv = ARGV.getopts('s:ep:Ptwcm')
+argv = ARGV.getopts('s:ep:PtwcCm')
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])
@@ -97,4 +102,5 @@ argv['P'] and main.writeAllParentIssueWorkingTimes
 argv['t'] and pp main.getTodaysWorkingTimes
 argv['w'] and pp main.getThisWeeksWorkingTimes
 argv['m'] and pp main.getThisMonthWorkingTimes
-argv['c'] and main.postThisWeeksWorkingTimes
+argv['c'] and main.postThisWeeksWorkingTimes(false)
+argv['C'] and main.postThisWeeksWorkingTimes(true)

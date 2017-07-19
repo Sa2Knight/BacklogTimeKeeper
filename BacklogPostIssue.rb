@@ -48,8 +48,9 @@ class BacklogPostIssue < Backlog
   # 課題を更新して作業ログを投稿
   # id: 更新する課題のID
   #------------------------------
-  def updateIssue(id)
-    @client.update_issue(id, description: makeDescription)
+  def updateIssue(id, opt = {})
+    opt.merge!(description: makeDescription)
+    @client.update_issue(id, opt)
   end
 
   # 課題にコメントを投稿する

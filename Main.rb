@@ -86,15 +86,21 @@ class Main
 
   # 機能8. 今月の作業ログを出力
   def getThisMonthWorkingTimes
-    days = Util.getMonthlyDate(Date.today)
+    days = Util.getMonthlyDate(Date.today - 10)
     backlog = BacklogActivities.new
     backlog.aggregateTotalWorkingTimes(days[:date_from], days[:date_to])
+  end
+
+  # 機能9. 機能8を使用してBacklogに作業ログを投稿する
+  def postThisMonthWorkingTimes
+    month_backlog = BacklogPostIssue.new(getThisMonthWorkingTimes)
+    month_backlog.postIssue
   end
 
 end
 
 main = Main.new
-argv = ARGV.getopts('s:ep:PtwcCm')
+argv = ARGV.getopts('s:ep:PtwcCmM')
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])
@@ -102,5 +108,6 @@ argv['P'] and main.writeAllParentIssueWorkingTimes
 argv['t'] and pp main.getTodaysWorkingTimes
 argv['w'] and pp main.getThisWeeksWorkingTimes
 argv['m'] and pp main.getThisMonthWorkingTimes
+argv['M'] and main.postThisMonthWorkingTimes
 argv['c'] and main.postThisWeeksWorkingTimes(false)
 argv['C'] and main.postThisWeeksWorkingTimes(true)

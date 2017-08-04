@@ -99,8 +99,24 @@ class Main
 
 end
 
+def help
+  puts "s: 課題を開始"
+  puts "e: 課題を終了"
+  puts "p: 親課題を指定して、子課題の累計作業時間を付与する"
+  puts "P: 全ての親課題に対して、各子課題の累計作業時間を付与する"
+  puts "t: 本日の作業ログを出力する"
+  puts "w: 今週の作業ログを出力する"
+  puts "m: 今月の作業ログを出力する"
+  puts "c: 今週の作業ログをBacklogに投稿する"
+  puts "C: 今週の作業ログをBacklogに投稿し、本日の作業ログをコメントする"
+  puts "M: 今月の作業ログをBacklogに投稿する"
+  puts "h: オプション一覧を表示"
+  exit
+end
+
 main = Main.new
-argv = ARGV.getopts('s:ep:PtwcCmM')
+argv = ARGV.getopts('hs:ep:PtwcCmM')
+argv['h'] and help
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])

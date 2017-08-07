@@ -71,8 +71,7 @@ class BacklogActivities < Backlog
     def getUserActivities(date_from, date_to, params = {})
       params[:count] = @@ACTIVITIES_MAX
       activities = @client.get_user_activities(@user.id, params).body
-      puts Util.slide9hours(activities[-1].created)
-      require_recursive = (Util.slide9hours(activities[-1].created) > date_from)
+      require_recursive = (Util.slide9hours(activities[-1].created) > Util.strToDate(date_from))
       activities.select! do |ac|
         addIssue(ac)
         date = Util.slide9hours(ac.created).to_date # タイムゾーン調整

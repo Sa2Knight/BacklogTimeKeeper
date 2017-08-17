@@ -86,7 +86,7 @@ class Main
 
   # 機能8. 今月の作業ログを出力
   def getThisMonthWorkingTimes
-    days = Util.getMonthlyDate(Date.today - 10)
+    days = Util.getMonthlyDate(Date.today)
     backlog = BacklogActivities.new
     backlog.aggregateTotalWorkingTimes(days[:date_from], days[:date_to])
   end

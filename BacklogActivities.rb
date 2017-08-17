@@ -78,7 +78,7 @@ class BacklogActivities < Backlog
         Util.periodIn?(date, date_from, date_to)
       end
       # 該当のアクティビティを取得しきれなければ再帰呼出し
-      if require_recursive
+      if activities && require_recursive
         params[:maxId] = activities[-1].id
         puts "アクティビティ取得中"
         sleep @@SLEEP_SEC

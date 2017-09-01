@@ -52,7 +52,7 @@ class Util
 
   # 外部スクリプトを呼び出して、チャットワークの表示名に課題キーを付与する
   # チャットワークの本来の表示名は環境変数で渡す
-  def self.setIssueKeyToChatwork_name(issue_key)
+  def self.setIssueKeyToChatworkName(issue_key)
     name = ENV['CHATWORK_DEFAULT_NAME']
     `python ChangeChatworkName.py "#{name}@#{issue_key}"`
   end

@@ -50,4 +50,18 @@ class Util
     return datetime + Rational(9, 24)
   end
 
+  # 外部スクリプトを呼び出して、チャットワークの表示名に課題キーを付与する
+  # チャットワークの本来の表示名は環境変数で渡す
+  def self.set_issue_key_to_chatwork_name(issue_key)
+    name = ENV['CHATWORK_DEFAULT_NAME']
+    `python ChangeChatworkName.py "#{name}@#{issue_key}"`
+  end
+
+  # 外部スクリプトを呼び出して、チャットワークの表示名を元に戻す
+  # チャットワークの本来の表示名は環境変数で渡す
+  def self.reset_chatwork_name
+    name = ENV['CHATWORK_DEFAULT_NAME']
+    `python ChangeChatworkName.py "#{name}"`
+  end
+
 end

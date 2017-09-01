@@ -3,3 +3,5 @@
 vendor
 Gemfile.lock
 work
+secret.json
+*.log

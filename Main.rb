@@ -78,7 +78,7 @@ class Main
     weeks_backlog = BacklogPostIssue.new(getThisWeeksWorkingTimes)
     if with_todays
       todays_logs = getTodaysWorkingTimes
-      todays_backlog = BacklogPostIssue.new(getTodaysWorkingTimes)
+      todays_backlog = BacklogPostIssue.new(todays_logs)
       opt[:comment] = todays_backlog.makeDescription
     end
     weeks_backlog.postIssue(opt)

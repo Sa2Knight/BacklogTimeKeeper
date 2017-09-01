@@ -18,6 +18,7 @@ class Main
     @tk.is_empty? or raise '課題が作業中です'
     @tk.set(key)
     puts "#{backlog.getTitle}(#{key})を開始しました"
+    Util.setIssueKeyToChatworkName(key) and puts "チャットワークの表示名を変更完了"
   end
 
   # 機能2. 課題をアンセットする
@@ -28,6 +29,7 @@ class Main
     hours_to_add = result[:diff_hours]
     backlog = Backlog.new(:issue_key => key)
     params = {comment: %(#{result[:time_from]} 〜 #{result[:time_to]})}
+    Util.resetChatworkName and puts "チャットワークの表示名を変更完了"
     backlog.addWorkingTime(hours_to_add, params)
     puts "#{backlog.getTitle}(#{key})を終了し、作業時間を#{hours_to_add.round(2)}時間追加しました"
   end

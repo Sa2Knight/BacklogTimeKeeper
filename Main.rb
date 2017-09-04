@@ -18,7 +18,7 @@ class Main
     @tk.is_empty? or raise '課題が作業中です'
     @tk.set(key)
     puts "#{backlog.getTitle}(#{key})を開始しました"
-    Util.setIssueKeyToChatworkName(key) and puts "チャットワークの表示名を変更完了"
+    Util.giveInformationToChatworkName(key) and puts "チャットワークの表示名を変更完了"
   end
 
   # 機能2. 課題をアンセットする
@@ -99,6 +99,12 @@ class Main
     month_backlog.postIssue
   end
 
+  # 機能10. チャットワークの表示名に昼食中の情報を付与する
+  def giveLunchInfomationToChatworkName
+    end_time = (DateTime.now + Rational(1, 24)).strftime('~%H:%mぐらい')
+    Util.giveInformationToChatworkName("昼食中(#{end_time})")
+  end
+
 end
 
 def help
@@ -111,13 +117,16 @@ def help
   puts "m: 今月の作業ログを出力する"
   puts "c: 今週の作業ログをBacklogに投稿する"
   puts "C: 今週の作業ログをBacklogに投稿し、本日の作業ログをコメントする"
+  puts "l: チャットワークの表示名に'昼食中'を付与する"
   puts "M: 今月の作業ログをBacklogに投稿する"
+  puts "l: 現在時刻を元に、昼食中の情報をチャットワークの表示名で通知する"
+  puts "r: チャットワークの表示名をリセットする"
   puts "h: オプション一覧を表示"
   exit
 end
 
 main = Main.new
-argv = ARGV.getopts('hs:ep:PtwcCmM')
+argv = ARGV.getopts('hs:ep:PtwcCmMlr')
 argv['h'] and help
 argv['s'] and main.set(argv['s'])
 argv['e'] and main.unset
@@ -129,3 +138,5 @@ argv['m'] and pp main.getThisMonthWorkingTimes
 argv['M'] and main.postThisMonthWorkingTimes
 argv['c'] and main.postThisWeeksWorkingTimes(false)
 argv['C'] and main.postThisWeeksWorkingTimes(true)
+argv['l'] and main.giveLunchInfomationToChatworkName
+argv['r'] and Util.resetChatworkName

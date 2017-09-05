@@ -22,7 +22,7 @@ class TimeKeeper
     params = load_json
     time_from = Time.parse(params['datetime'])
     time_to   = Time.new
-    diff_hours = Util.getTimeDiff(time_from, time_to)
+    diff_hours = Util.getTimeDiffHour(time_from, time_to)
     write_json({})
     return {
       :issue_key  => params['key'],
@@ -30,6 +30,14 @@ class TimeKeeper
       :time_from  => time_from.strftime('%H:%M'),
       :time_to    => time_to.strftime('%H:%M'),
     }
+  end
+
+  # 現在の作業時間を文字列で戻す
+  def getWorkingTimeString
+    params = load_json
+    time_from = Time.parse(params['datetime'])
+    time_to   = Time.new
+    Util.getTimeDiffString(time_from, time_to)
   end
 
   # ログファイルが空であるかをチェック

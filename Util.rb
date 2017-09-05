@@ -45,9 +45,27 @@ class Util
   end
 
   # 2つのTimeオブジェクトの時刻差をhoursで戻す
-  def self.getTimeDiff(time_from, time_to)
+  def self.getTimeDiffHour(time_from, time_to)
     diff_sec = (time_to - time_from).to_f
     diff_sec / 60 / 60
+  end
+
+  # 2つのTimeオブジェクトの時刻さをhh:mm:ssで取得
+  def self.getTimeDiffString(time_from, time_to)
+    diff_sec = (time_to - time_from).to_i
+    hour = 0
+    min  = 0
+    sec  = 0
+    if 60 * 60 < diff_sec
+      hour = diff_sec / (60 * 60)
+      diff_sec = diff_sec % (60 * 60)
+    end
+    if 60 < diff_sec
+      min = diff_sec / 60
+      diff_sec = diff_sec % 60
+    end
+    sec = diff_sec
+    return sprintf("%02d時間%02d分%02d秒", hour, min, sec)
   end
 
   # 日付時刻文字列を9時間進めてDateTimeオブジェクトに変換する

@@ -22,7 +22,7 @@ class TimeKeeper
     params = load_json
     time_from = Time.parse(params['datetime'])
     time_to   = Time.new
-    diff_hours = self.getTimeDiff(time_from, time_to)
+    diff_hours = Util.getTimeDiff(time_from, time_to)
     write_json({})
     return {
       :issue_key  => params['key'],
@@ -30,12 +30,6 @@ class TimeKeeper
       :time_from  => time_from.strftime('%H:%M'),
       :time_to    => time_to.strftime('%H:%M'),
     }
-  end
-
-  # 2つのTimeオブジェクトの時刻差をhoursで戻す
-  def getTimeDiff(time_from, time_to)
-    diff_sec = (time_to - time_from).to_f
-    diff_sec / 60 / 60
   end
 
   # ログファイルが空であるかをチェック

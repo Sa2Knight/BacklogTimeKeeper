@@ -44,6 +44,12 @@ class Util
     }
   end
 
+  # 2つのTimeオブジェクトの時刻差をhoursで戻す
+  def self.getTimeDiff(time_from, time_to)
+    diff_sec = (time_to - time_from).to_f
+    diff_sec / 60 / 60
+  end
+
   # 日付時刻文字列を9時間進めてDateTimeオブジェクトに変換する
   def self.slide9hours(datetime)
     datetime.class == String and datetime = DateTime.parse(datetime)

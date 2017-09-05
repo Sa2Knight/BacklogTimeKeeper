@@ -101,7 +101,7 @@ class Main
 
   # 機能10. チャットワークの表示名に昼食中の情報を付与する
   def giveLunchInfomationToChatworkName
-    end_time = (DateTime.now + Rational(1, 24)).strftime('~%H:%mぐらい')
+    end_time = (DateTime.now + Rational(1, 24)).strftime('~%H:%Mぐらい')
     Util.giveInformationToChatworkName("昼食中(#{end_time})")
   end
 

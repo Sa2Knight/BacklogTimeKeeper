@@ -78,14 +78,14 @@ class Util
   # チャットワークの本来の表示名は環境変数で渡す
   def self.giveInformationToChatworkName(info)
     name = ENV['CHATWORK_DEFAULT_NAME']
-    `python ChangeChatworkName.py "#{name}@#{info}"`
+    `python3 ChangeChatworkName.py "#{name}@#{info}"`
   end
 
   # 外部スクリプトを呼び出して、チャットワークの表示名を元に戻す
   # チャットワークの本来の表示名は環境変数で渡す
   def self.resetChatworkName
     name = ENV['CHATWORK_DEFAULT_NAME']
-    `python ChangeChatworkName.py "#{name}"`
+    `python3 ChangeChatworkName.py "#{name}"`
   end
 
 end

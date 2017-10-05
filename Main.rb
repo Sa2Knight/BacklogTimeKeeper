@@ -8,6 +8,9 @@ require_relative 'Util'
 
 class Main
 
+  WEEKLY_ISSUES_PARENT = 8726828
+  MONTHLY_ISSUES_PARENT = 8726829
+
   def initialize
     @tk = TimeKeeper.new
   end
@@ -101,7 +104,7 @@ class Main
       todays_backlog = BacklogPostIssue.new(todays_logs)
       opt[:comment] = todays_backlog.makeDescription
     end
-    weeks_backlog.postIssue(opt)
+    weeks_backlog.postIssue(WEEKLY_ISSUES_PARENT, opt)
   end
 
   # 機能9. 今月の作業ログを出力
@@ -114,7 +117,7 @@ class Main
   # 機能10. 機能9を使用してBacklogに作業ログを投稿する
   def postThisMonthWorkingTimes
     month_backlog = BacklogPostIssue.new(getThisMonthWorkingTimes)
-    month_backlog.postIssue
+    month_backlog.postIssue(MONTHLY_ISSUES_PARENT)
   end
 
   # 機能11. チャットワークの表示名に昼食中の情報を付与する

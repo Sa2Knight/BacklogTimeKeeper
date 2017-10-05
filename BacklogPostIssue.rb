@@ -19,12 +19,12 @@ class BacklogPostIssue < Backlog
   # 既に該当の課題が存在すればそれの本文を更新
   # 該当する課題が無い場合新規作成
   #-------------------------------------------------
-  def postIssue(opt = {})
+  def postIssue(parent, opt = {})
     current_issue = getIssueBySummary(makeSummary)
     if current_issue
       updateIssue(current_issue.id, opt)
     else
-      created_id = createIssue.body.id
+      created_id = createIssue(parentIssueId: parent).body.id
       opt[:comment] and postComment(created_id, opt[:comment])
     end
   end

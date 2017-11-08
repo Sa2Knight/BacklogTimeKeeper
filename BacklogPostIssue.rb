@@ -68,7 +68,9 @@ class BacklogPostIssue < Backlog
     date_from = Util.strToDate(@logs[:date_from]).strftime('%m/%d')
     date_to   = Util.strToDate(@logs[:date_to]).strftime('%m/%d')
     if date_from === date_to
-      return "[#{name}] #{date_from}"
+      date = Util.strToDate(@logs[:date_from])
+      cwday = %w(月 火 水 木 金 土 日)[date.cwday - 1]
+      return "[#{name}] #{date_from}(#{cwday})"
     else
       return "[#{name}] #{date_from}~#{date_to}"
     end

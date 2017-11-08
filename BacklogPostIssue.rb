@@ -78,7 +78,7 @@ class BacklogPostIssue < Backlog
   #----------------------------
   def makeDescription
     descriptions = [makeHeader]
-    projects = @logs[:projects].sort {|(k1,v1), (k2,v2)| v2[:total] <=> v1[:total]}
+    projects = @logs[:projects].sort {|(_,v1), (_,v2)| v2[:total] <=> v1[:total]}
     projects.each do |key, val|
       descriptions << makeProjectHeader(key)
       descriptions.concat(makeProjectIssues(key))

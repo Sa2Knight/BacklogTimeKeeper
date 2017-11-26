@@ -12,14 +12,27 @@ class Backlog
     space_id   = params[:space_id] || ENV['BACKLOG_SPACE']
     api_key    = params[:api_ley]  || ENV['BACKLOGAPI']
     @issue_key = params[:issue_key]
-    @client = BacklogKit::Client.new(space_id: space_id, api_key: api_key)
-    @user   = @client.get_myself.body
+    @client   = BacklogKit::Client.new(space_id: space_id, api_key: api_key)
+    @user     = @client.get_myself.body
     begin
       @issue_key and @issue = @client.get_issue(@issue_key)
     rescue Exception => e
       p e
       raise 'Backlogから課題を取得できませんでした'
     end
+  end
+
+  # プロジェクトキーをプロジェクト名に変換する
+  #---------------------------------------------
+  def projectKeyToName(projectKey)
+    unless @projects
+      @projects = {}
+      projects_result = @client.get_projects
+      projects_result.body.each do |project|
+        @projects[project.projectKey] = project.name
+      end
+    end
+    @projects[projectKey]
   end
 
   # 課題のIDを取得する

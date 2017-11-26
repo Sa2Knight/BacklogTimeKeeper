@@ -126,6 +126,19 @@ class Main
     Util.giveInformationToChatworkName("昼食中(#{end_time})")
   end
 
+  # 機能12. 定例報告用の、今月と今週の作業レポートを出力する
+  def showMonthAndWeeksReport
+    month_report = self.getThisMonthWorkingTimes[:projects]
+    weeks_report = self.getThisWeeksWorkingTimes[:projects]
+    projects = month_report.keys
+    projects.each do |project|
+      puts "【#{project}】"
+      puts "今月: #{month_report[project][:rate] || 0}%"
+      puts "今週: #{weeks_report[project][:rate] || 0}%"
+      puts ""
+    end
+  end
+
 end
 
 def help
@@ -143,12 +156,13 @@ def help
   puts "M: 今月の作業ログをBacklogに投稿する"
   puts "l: 現在時刻を元に、昼食中の情報をチャットワークの表示名で通知する"
   puts "r: チャットワークの表示名をリセットする"
+  puts "i: 定例報告用の今月/今週の集計情報を出力する"
   puts "h: オプション一覧を表示"
   exit
 end
 
 main = Main.new
-argv = ARGV.getopts('hs:dep:PtwcCmMlr')
+argv = ARGV.getopts('hs:dep:PtwcCmMlri')
 argv['h'] and help
 argv['s'] and main.set(argv['s'])
 argv['d'] and main.displayWorkingTime
@@ -163,3 +177,4 @@ argv['c'] and main.postThisWeeksWorkingTimes(false)
 argv['C'] and main.postThisWeeksWorkingTimes(true)
 argv['l'] and main.giveLunchInfomationToChatworkName
 argv['r'] and Util.resetChatworkName
+argv['i'] and main.showMonthAndWeeksReport

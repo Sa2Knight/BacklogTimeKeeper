@@ -128,13 +128,14 @@ class Main
 
   # 機能12. 定例報告用の、今月と今週の作業レポートを出力する
   def showMonthAndWeeksReport
-    month_report = self.getThisMonthWorkingTimes[:projects]
+    backlog = Backlog.new
+    month_report = Hash[self.getThisMonthWorkingTimes[:projects].sort_by {|_ ,v| -v[:rate]}]
     weeks_report = self.getThisWeeksWorkingTimes[:projects]
     projects = month_report.keys
     projects.each do |project|
-      puts "【#{project}】"
-      puts "今月: #{month_report[project][:rate] || 0}%"
-      puts "今週: #{weeks_report[project][:rate] || 0}%"
+      puts "■ #{backlog.projectKeyToName(project)}"
+      puts "\t今月: #{month_report[project][:rate] || 0}%"
+      puts "\t今週: #{weeks_report[project][:rate] || 0}%"
       puts ""
     end
   end

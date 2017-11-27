@@ -32,6 +32,12 @@ class TimeKeeper
     }
   end
 
+  # 現在作業中の課題キーを戻す
+  def getIssueKey
+    params = load_json
+    params['key']
+  end
+
   # 現在の作業時間を文字列で戻す
   def getWorkingTimeString
     params = load_json

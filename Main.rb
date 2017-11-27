@@ -41,11 +41,12 @@ class Main
   # 機能3. 現在の課題の作業時間をリアルタイムに標準出力
   def displayWorkingTime
     @tk.is_empty? and raise '課題が設定されていません'
+    issue_key = @tk.getIssueKey
     while true
       begin
         diff_string = @tk.getWorkingTimeString
-        printf "作業開始から #{diff_string}"
-        printf "\e[27D"
+        printf "#{issue_key} #{diff_string}"
+        printf "\e[50D"
         STDOUT.flush
         sleep 1
       rescue Interrupt

@@ -132,11 +132,10 @@ class Main
     backlog = Backlog.new
     month_report = Hash[self.getThisMonthWorkingTimes[:projects].sort_by {|_ ,v| -v[:rate]}]
     weeks_report = self.getThisWeeksWorkingTimes[:projects]
-    projects = month_report.keys
-    projects.each do |project|
+    month_report.keys.concat(weeks_report.keys).uniq.each do |project|
       puts "■ #{backlog.projectKeyToName(project)}"
-      puts "\t今月: #{month_report[project][:rate] || 0}%"
-      puts "\t今週: #{weeks_report[project][:rate] || 0}%"
+      puts "\t今月: #{month_report[project][:rate] || 0}%" if month_report[project]
+      puts "\t今週: #{weeks_report[project][:rate] || 0}%" if weeks_report[project]
       puts ""
     end
   end

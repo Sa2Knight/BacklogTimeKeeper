@@ -38,6 +38,19 @@ class Main
     puts "#{backlog.getTitle}(#{key})を終了し、作業時間を#{hours_to_add.round(2)}時間追加しました"
   end
 
+  # 課題を切り替える
+  def swap(key)
+    if @tk.is_empty?
+      set(key)
+    else
+      backlog = Backlog.new(:issue_key => key)
+      if backlog
+        @tk.swap(key)
+        Util.giveInformationToChatworkName(key)
+      end
+    end
+  end
+
   # 現在の課題の作業時間をリアルタイムに標準出力
   def displayWorkingTime
     @tk.is_empty? and raise '課題が設定されていません'
@@ -145,6 +158,7 @@ end
 def help
   puts "s: 課題を開始"
   puts "e: 課題を終了"
+  puts "b: 課題を差し替える"
   puts "t: 進行中の課題の経過時間を表示"
   puts "p: 親課題を指定して、子課題の累計作業時間を付与する"
   puts "P: 全ての親課題に対して、各子課題の累計作業時間を付与する"
@@ -163,9 +177,10 @@ def help
 end
 
 main = Main.new
-argv = ARGV.getopts('hs:dep:PtwcCmMlri')
+argv = ARGV.getopts('hs:b:dep:PtwcCmMlri')
 argv['h'] and help
 argv['s'] and main.set(argv['s'])
+argv['b'] and main.swap(argv['b'])
 argv['d'] and main.displayWorkingTime
 argv['e'] and main.unset
 argv['p'] and main.writeParentIssueWorkingTime(argv['p'])

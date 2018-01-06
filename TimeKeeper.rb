@@ -32,6 +32,13 @@ class TimeKeeper
     }
   end
 
+  # workログの課題キーを差し替える
+  def swap(key)
+    params = load_json
+    params['key'] = key
+    write_json(params)
+  end
+
   # 現在作業中の課題キーを戻す
   def getIssueKey
     params = load_json

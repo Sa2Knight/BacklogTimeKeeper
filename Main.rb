@@ -15,7 +15,7 @@ class Main
     @tk = TimeKeeper.new
   end
 
-  # 機能1. 課題をセットする
+  # 課題をセットする
   def set(key)
     backlog = Backlog.new(:issue_key => key)
     @tk.is_empty? or raise '課題が作業中です'
@@ -25,7 +25,7 @@ class Main
     self.displayWorkingTime
   end
 
-  # 機能2. 課題をアンセットする
+  # 課題をアンセットする
   def unset
     @tk.is_empty? and raise '課題が設定されていません'
     result = @tk.unset
@@ -38,7 +38,7 @@ class Main
     puts "#{backlog.getTitle}(#{key})を終了し、作業時間を#{hours_to_add.round(2)}時間追加しました"
   end
 
-  # 機能3. 現在の課題の作業時間をリアルタイムに標準出力
+  # 現在の課題の作業時間をリアルタイムに標準出力
   def displayWorkingTime
     @tk.is_empty? and raise '課題が設定されていません'
     issue_key = @tk.getIssueKey
@@ -56,7 +56,7 @@ class Main
     end
   end
 
-  # 機能4. 親課題の作業時間を記録する
+  # 親課題の作業時間を記録する
   def writeParentIssueWorkingTime(key)
     backlog = Backlog.new(:issue_key => key)
     begin
@@ -73,7 +73,7 @@ class Main
     end
   end
 
-  # 機能5. 未完了全ての親課題について、機能3を実行する
+  # 未完了全ての親課題について、機能3を実行する
   def writeAllParentIssueWorkingTimes
     backlog = Backlog.new
     incomplete_parent_issues = backlog.getIncompleteParentIssues
@@ -82,21 +82,21 @@ class Main
     end
   end
 
-  # 機能6. 本日の作業ログを出力
+  # 本日の作業ログを出力
   def getTodaysWorkingTimes
     today = Date.today.to_s
     backlog = BacklogActivities.new
     backlog.aggregateTotalWorkingTimes(today, today)
   end
 
-  # 機能7. 今週の作業ログを出力
+  # 今週の作業ログを出力
   def getThisWeeksWorkingTimes
     days = Util.getWeeklyDate(Date.today)
     backlog = BacklogActivities.new
     backlog.aggregateTotalWorkingTimes(days[:date_from], days[:date_to])
   end
 
-  # 機能8. 機能7を使用してBacklogに作業ログを投稿する
+  # 今週の作業ログBacklogに投稿する
   def postThisWeeksWorkingTimes(with_todays)
     opt = {}
     weeks_backlog = BacklogPostIssue.new(getThisWeeksWorkingTimes)
@@ -108,26 +108,26 @@ class Main
     weeks_backlog.postIssue(WEEKLY_ISSUES_PARENT, opt)
   end
 
-  # 機能9. 今月の作業ログを出力
+  # 今月の作業ログを出力
   def getThisMonthWorkingTimes
     days = Util.getMonthlyDate(Date.today)
     backlog = BacklogActivities.new
     backlog.aggregateTotalWorkingTimes(days[:date_from], days[:date_to])
   end
 
-  # 機能10. 機能9を使用してBacklogに作業ログを投稿する
+  # 今月の作業ログをBacklogに投稿する
   def postThisMonthWorkingTimes
     month_backlog = BacklogPostIssue.new(getThisMonthWorkingTimes)
     month_backlog.postIssue(MONTHLY_ISSUES_PARENT)
   end
 
-  # 機能11. チャットワークの表示名に昼食中の情報を付与する
+  # チャットワークの表示名に昼食中の情報を付与する
   def giveLunchInfomationToChatworkName
     end_time = (DateTime.now + Rational(1, 24)).strftime('~%H:%Mぐらい')
     Util.giveInformationToChatworkName("昼食中(#{end_time})")
   end
 
-  # 機能12. 定例報告用の、今月と今週の作業レポートを出力する
+  # 定例報告用の、今月と今週の作業レポートを出力する
   def showMonthAndWeeksReport
     backlog = Backlog.new
     month_report = Hash[self.getThisMonthWorkingTimes[:projects].sort_by {|_ ,v| -v[:rate]}]
